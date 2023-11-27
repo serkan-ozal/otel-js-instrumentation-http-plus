@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 NPM package which provides advanced automatic instrumentation for 
-Node.js [`http`](https://nodejs.org/api/http.html) and [`https`](https://nodejs.org/api/http.html) modules
+Node.js [`http`](https://nodejs.org/api/http.html) and [`https`](https://nodejs.org/api/https.html) modules
 on top of **OpenTelemetry** `@opentelemetry/instrumentation-http` instrumentation module.
 
 
@@ -55,7 +55,7 @@ registerInstrumentations({
 | Options                | Type      | Default Value   | Description                                                  |
 |------------------------|-----------|-----------------|--------------------------------------------------------------|
 | `captureRequestBody`   | `boolean` | `false`         | Enables capturing HTTP request body                          |
-| `maxRequestBodySize`   | `boolean` | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured |
+| `maxRequestBodySize`   | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured |
 
 
 ## Examples
