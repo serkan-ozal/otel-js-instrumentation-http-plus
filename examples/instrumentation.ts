@@ -25,6 +25,8 @@ const instrumentations: Instrumentation[] = [
     new HttpPlusInstrumentation({
         captureRequestBody: true, // Enable capturing request body
         maxRequestBodySize: 16 * 1024, // Set max size for the request body to be capture to 16 KB
+        captureResponseBody: true, // Enable capturing response body
+        maxResponseBodySize: 16 * 1024, // Set max size for the response body to be capture to 16 KB
         requestHook: (
             span: Span,
             request: ClientRequest | IncomingMessage

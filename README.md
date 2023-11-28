@@ -52,10 +52,12 @@ registerInstrumentations({
 
 **In addition** to base OpenTelemetry HTTP instrumentation options [here](https://github.com/open-telemetry/opentelemetry-js/blob/main/experimental/packages/opentelemetry-instrumentation-http/README.md#http-instrumentation-options),
 **OpenTelemetry HTTP Instrumentation Plus** also provides the following options to configure:
-| Options                | Type      | Default Value   | Description                                                  |
-|------------------------|-----------|-----------------|--------------------------------------------------------------|
-| `captureRequestBody`   | `boolean` | `false`         | Enables capturing HTTP request body                          |
-| `maxRequestBodySize`   | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured |
+| Options                | Type      | Default Value   | Description                                                   |
+|------------------------|-----------|-----------------|---------------------------------------------------------------|
+| `captureRequestBody`   | `boolean` | `false`         | Enables capturing HTTP request body                           |
+| `maxRequestBodySize`   | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured  |
+| `captureResponseBody`  | `boolean` | `false`         | Enables capturing HTTP response body                          |
+| `maxResponseBodySize`  | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP response body to be captured |
 
 
 ## Examples
@@ -69,7 +71,6 @@ npm run example
 
 ## Roadmap
 
-- Capture HTTP response body (with max size limit)
 - Calculate **"DNS Lookup"**, **"TCP Connection"**, **"TLS handshake"**, **"Time to First Byte (TTFB)"** and **"Content Transfer"** timings
 
 
