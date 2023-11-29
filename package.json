@@ -1,6 +1,6 @@
 {
   "name": "otel-instrumentation-http-plus",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OpenTelemetry Advanced HTTP Instrumentation Package",
   "author": "Serkan Özal <serkanozal86@gmail.com> (https://github.com/serkan-ozal)",
   "homepage": "https://github.com/serkan-ozal/otel-js-instrumentation-http-plus",
