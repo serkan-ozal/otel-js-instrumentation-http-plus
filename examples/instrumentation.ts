@@ -27,6 +27,7 @@ const instrumentations: Instrumentation[] = [
         maxRequestBodySize: 16 * 1024, // Set max size for the request body to be capture to 16 KB
         captureResponseBody: true, // Enable capturing response body
         maxResponseBodySize: 16 * 1024, // Set max size for the response body to be capture to 16 KB
+        traceNetworkOperations: true, // Enable tracing network timings by creating spans for traced network operations
         requestHook: (
             span: Span,
             request: ClientRequest | IncomingMessage
@@ -48,7 +49,7 @@ registerInstrumentations({
 console.log('Starting OTEL SDK ...');
 sdk.start();
 
-process.on('beforeExit', async (code: number): Promise<void> => {
+process.once('beforeExit', async (code: number): Promise<void> => {
     console.log('Shutting down OTEL SDK ...');
     await sdk.shutdown();
 });
