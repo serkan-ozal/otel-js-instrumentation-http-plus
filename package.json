@@ -34,6 +34,9 @@
     "release-alpha": "PRE_RELEASE_PHASE=alpha scripts/pre-release.sh",
     "release": "npm install; npm run build; release-it ${RELEASE_SCALE} --ci --git.commit --git.push --git.tag --git.tagName='v${version}' --github.release --no-git.requireCleanWorkingDir --no-git.requireUpstream --npm.publish"
   },
+  "dependencies": {
+    "flat": "^5.0.2"
+  },
   "peerDependencies": {
     "@opentelemetry/api": "^1.0.0",
     "@opentelemetry/instrumentation-http": "^0.30.0"
@@ -43,6 +46,7 @@
     "@opentelemetry/sdk-node": "^0.45.0",
     "@opentelemetry/sdk-trace-node": "^1.0.0",
     "@opentelemetry/semantic-conventions": "^1.0.0",
+    "@types/flat": "^5.0.2",
     "@types/node": "^20.10.0",
     "npm-install-peers": "^1.2.2",
     "prettier": "^2.2.1",

@@ -28,6 +28,24 @@ const instrumentations: Instrumentation[] = [
         captureResponseBody: true, // Enable capturing response body
         maxResponseBodySize: 16 * 1024, // Set max size for the response body to be capture to 16 KB
         traceNetworkOperations: true, // Enable tracing network timings by creating spans for traced network operations
+        requestBodyMaskHook: (
+            // Mask request body with your custom logic
+            request: ClientRequest,
+            requestBody: string
+        ): any => {
+            const requestBodyObj: any = JSON.parse(requestBody);
+            delete requestBodyObj.email; // Mask email
+            return requestBodyObj;
+        },
+        responseBodyMaskHook: (
+            // Mask response body with your custom logic
+            response: IncomingMessage,
+            responseBody: string
+        ): any => {
+            const responseBodyObj: any = JSON.parse(responseBody);
+            delete responseBodyObj.email; // Mask email
+            return responseBodyObj;
+        },
         requestHook: (
             span: Span,
             request: ClientRequest | IncomingMessage

@@ -52,14 +52,18 @@ registerInstrumentations({
 
 **In addition** to base OpenTelemetry HTTP instrumentation options [here](https://github.com/open-telemetry/opentelemetry-js/blob/main/experimental/packages/opentelemetry-instrumentation-http/README.md#http-instrumentation-options),
 **OpenTelemetry HTTP Instrumentation Plus** also provides the following options to configure:
-| Options                  | Type      | Default Value   | Description                                                   |
-|--------------------------|-----------|-----------------|---------------------------------------------------------------|
-| `captureRequestBody`     | `boolean` | `false`         | Enables capturing HTTP request body                           |
-| `maxRequestBodySize`     | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured  |
-| `captureResponseBody`    | `boolean` | `false`         | Enables capturing HTTP response body                          |
-| `maxResponseBodySize`    | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP response body to be captured |
-| `maxResponseBodySize`    | `number`  | `4096` (`4 KB`) | Sets maximum size limit for HTTP response body to be captured |
-| `traceNetworkOperations` | `boolean` | `false`         | Enables tracing network timings by creating spans for the following traced network operations <br/> - **DNS Lookup** <br/> - **TCP Connect** <br/> - **TLS Handshake** <br/> - **TTFB (Time To First Byte)** <br/> - **Content Transfer** |
+| Options                  | Type                           | Default Value   | Description                                                                                  |
+|--------------------------|--------------------------------|-----------------|----------------------------------------------------------------------------------------------|
+| `captureRequestBody`     | `boolean`                      | `false`         | Enables capturing HTTP request body                                                          |
+| `maxRequestBodySize`     | `number`                       | `4096` (`4 KB`) | Sets maximum size limit for HTTP request body to be captured                                 |
+| `captureResponseBody`    | `boolean`                      | `false`         | Enables capturing HTTP response body                                                         |
+| `maxResponseBodySize`    | `number`                       | `4096` (`4 KB`) | Sets maximum size limit for HTTP response body to be captured                                |
+| `maxResponseBodySize`    | `number`                       | `4096` (`4 KB`) | Sets maximum size limit for HTTP response body to be captured                                |
+| `traceNetworkOperations` | `boolean`                      | `false`         | Enables tracing network timings by creating spans for the following traced network operations <br/> - **DNS Lookup** <br/> - **TCP Connect** <br/> - **TLS Handshake** <br/> - **TTFB (Time To First Byte)** <br/> - **Content Transfer** |
+| `traceNetworkOperations` | `boolean`                      | `false`         | Enables tracing network timings by creating spans for the following traced network operations <br/> - **DNS Lookup** <br/> - **TCP Connect** <br/> - **TLS Handshake** <br/> - **TTFB (Time To First Byte)** <br/> - **Content Transfer** |
+| `requestBodyMaskHook`    | `HttpRequestBodyMaskFunction`  | -               | Function for masking traced HTTP request body (for ex. deleting or hiding sensitive fields)  |
+| `responseBodyMaskHook`   | `HttpResponseBodyMaskFunction` | -               | Function for masking traced HTTP response body (for ex. deleting or hiding sensitive fields) |
+
 
 ## Examples
 
@@ -72,7 +76,7 @@ npm run example
 
 ## Roadmap
 
-- Support custom masking for captured HTTP request and/or response bodies
+- Support masking for captured HTTP request and/or response bodies by configured ignored keys (without custom function implementation)
 
 
 ## Issues and Feedback
