@@ -16,6 +16,7 @@ import {
 import { Socket } from 'net';
 import { ReadableSpan } from '@opentelemetry/sdk-trace-node';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
+import { flatten } from 'flat';
 
 const { name, version } = require('../package.json');
 const tracer: Tracer = trace.getTracer(name, version);
@@ -34,6 +35,14 @@ export const HttpPlusSemanticAttributes = {
     NETWORK_CONTENT_TRANSFER_DURATION: 'net.content.transfer.duration',
 };
 
+export interface HttpRequestBodyMaskFunction {
+    (request: ClientRequest, requestBody: string): any;
+}
+
+export interface HttpResponseBodyMaskFunction {
+    (response: IncomingMessage, responseBody: string): any;
+}
+
 export interface HttpPlusInstrumentationConfig
     extends HttpInstrumentationConfig {
     captureRequestBody?: boolean;
@@ -41,6 +50,8 @@ export interface HttpPlusInstrumentationConfig
     captureResponseBody?: boolean;
     maxResponseBodySize?: number;
     traceNetworkOperations?: boolean;
+    requestBodyMaskHook?: HttpRequestBodyMaskFunction;
+    responseBodyMaskHook?: HttpResponseBodyMaskFunction;
 }
 
 type NetworkTimings = {
@@ -69,6 +80,47 @@ export class HttpPlusInstrumentation extends HttpInstrumentation {
                 config
             ),
         };
+    }
+
+    private _setAttributeValue(
+        span: Span,
+        attrName: string,
+        attrValue: any
+    ): void {
+        if (
+            typeof attrValue === 'string' ||
+            typeof attrValue === 'number' ||
+            typeof attrValue === 'boolean'
+        ) {
+            span.setAttribute(attrName, attrValue);
+        } else if (attrValue instanceof Buffer) {
+            span.setAttribute(attrName, attrValue.toString('utf8'));
+        } else if (typeof attrValue == 'object') {
+            span.setAttributes(
+                flatten({
+                    [attrName]: attrValue,
+                })
+            );
+        } else if (Array.isArray(attrValue)) {
+            // Check whether there is any element
+            if (attrValue.length) {
+                // Try to resolve array type over first element.
+                // Other elements might have different types but this is just best effort solution.
+                const firstElement: any = attrValue[0];
+                if (
+                    typeof firstElement === 'string' ||
+                    typeof firstElement === 'number' ||
+                    typeof firstElement === 'boolean'
+                ) {
+                    span.setAttribute(attrName, attrValue);
+                } else {
+                    // TODO What should we do with other array types???
+                }
+            } else {
+                span.setAttribute(attrName, attrValue);
+            }
+        }
+        // TODO What should we do with other types???
     }
 
     private _createRequestHook(
@@ -107,12 +159,22 @@ export class HttpPlusInstrumentation extends HttpInstrumentation {
                                 requestData.length <= maxRequestBodySize
                             ) {
                                 try {
-                                    const requestBody: string =
+                                    let requestBody: string =
                                         requestData.toString('utf-8');
-                                    span.setAttribute(
-                                        HttpPlusSemanticAttributes.HTTP_REQUEST_BODY,
-                                        requestBody
-                                    );
+                                    if (config?.requestBodyMaskHook) {
+                                        requestBody =
+                                            config.requestBodyMaskHook(
+                                                request,
+                                                requestBody
+                                            );
+                                    }
+                                    if (requestBody) {
+                                        instrumentation._setAttributeValue(
+                                            span,
+                                            HttpPlusSemanticAttributes.HTTP_REQUEST_BODY,
+                                            requestBody
+                                        );
+                                    }
                                 } catch (e) {
                                     instrumentation._diag.error(
                                         'Error occurred while capturing request body:',
@@ -134,12 +196,22 @@ export class HttpPlusInstrumentation extends HttpInstrumentation {
                                 requestData.length <= maxRequestBodySize
                             ) {
                                 try {
-                                    const requestBody: string =
+                                    let requestBody: any =
                                         requestData.toString('utf-8');
-                                    span.setAttribute(
-                                        HttpPlusSemanticAttributes.HTTP_REQUEST_BODY,
-                                        requestBody
-                                    );
+                                    if (config?.requestBodyMaskHook) {
+                                        requestBody =
+                                            config.requestBodyMaskHook(
+                                                request,
+                                                requestBody
+                                            );
+                                    }
+                                    if (requestBody) {
+                                        instrumentation._setAttributeValue(
+                                            span,
+                                            HttpPlusSemanticAttributes.HTTP_REQUEST_BODY,
+                                            requestBody
+                                        );
+                                    }
                                 } catch (e) {
                                     instrumentation._diag.error(
                                         'Error occurred while capturing request body:',
@@ -338,12 +410,21 @@ export class HttpPlusInstrumentation extends HttpInstrumentation {
                         if (chunks && chunks.length) {
                             const concatedChunks: Buffer =
                                 Buffer.concat(chunks);
-                            const responseBody: string =
+                            let responseBody: any =
                                 concatedChunks.toString('utf8');
-                            span.setAttribute(
-                                HttpPlusSemanticAttributes.HTTP_RESPONSE_BODY,
-                                responseBody
-                            );
+                            if (config?.responseBodyMaskHook) {
+                                responseBody = config?.responseBodyMaskHook(
+                                    response,
+                                    responseBody
+                                );
+                            }
+                            if (responseBody) {
+                                instrumentation._setAttributeValue(
+                                    span,
+                                    HttpPlusSemanticAttributes.HTTP_RESPONSE_BODY,
+                                    responseBody
+                                );
+                            }
                         }
                     } catch (e) {
                         instrumentation._diag.error(
